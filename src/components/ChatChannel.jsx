@@ -1,7 +1,9 @@
+import { PlusSquareIcon } from '@chakra-ui/icons';
 import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Heading,
   List,
@@ -10,10 +12,12 @@ import {
 import React, { useEffect, useState } from 'react';
 import { getChatChannels } from '../utils/chat';
 import { getUsers } from '../utils/user';
+import ChatChannelModalForm from './ChatChannelModalForm';
 
 function ChatChannel({ user, active }) {
   const [users, setUsers] = useState([]);
   const [channels, setChannels] = useState([]);
+  const [isAddChannel, setIsAddChannel] = useState(false);
 
   useEffect(() => {
     // get channels
@@ -63,6 +67,17 @@ function ChatChannel({ user, active }) {
         <CardBody p={2} m={0}>
           <List p={0}>{channelsView(channels)}</List>
         </CardBody>
+        <CardFooter p={2}>
+          <Button
+            size='xs'
+            colorScheme='blue'
+            variant='ghost'
+            leftIcon={<PlusSquareIcon />}
+            onClick={() => setIsAddChannel(true)}
+          >
+            Add
+          </Button>
+        </CardFooter>
       </Card>
 
       <Card marginTop={3}>
@@ -73,6 +88,8 @@ function ChatChannel({ user, active }) {
           <List p={0}>{usersView(users)}</List>
         </CardBody>
       </Card>
+
+      <ChatChannelModalForm open={isAddChannel} />
     </>
   );
 }
