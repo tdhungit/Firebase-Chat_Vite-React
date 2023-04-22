@@ -14,7 +14,13 @@ import { getChatChannels } from '../utils/chat';
 import { getUsers } from '../utils/user';
 import ChatChannelModalForm from './ChatChannelModalForm';
 
-function ChatChannel({ user, active }) {
+function ChatChannel({
+  user,
+  selectedChannelId,
+  selectedUserId,
+  setChannel,
+  setUser,
+}) {
   const [users, setUsers] = useState([]);
   const [channels, setChannels] = useState([]);
   const [isAddChannel, setIsAddChannel] = useState(false);
@@ -30,20 +36,16 @@ function ChatChannel({ user, active }) {
     });
   }, []);
 
-  const usersView = (users) => {
-    let listView = [];
-    users.forEach((u) => {
-      if (u.id !== user.uid) {
-        listView.push(
-          <ListItem key={u.id}>
-            <Button width='100%' colorScheme='gray' size='xs' variant='outline'>
-              {u.name}
-            </Button>
-          </ListItem>
-        );
-      }
-    });
-    return listView;
+  const onSaveChannel = () => {
+    setIsAddChannel(false);
+  };
+
+  const onSelectChannel = (channelSelect) => {
+    setChannel(channelSelect);
+  };
+
+  const onSelectUser = (userSelect) => {
+    setUser(userSelect);
   };
 
   const channelsView = (channels) => {
@@ -52,10 +54,11 @@ function ChatChannel({ user, active }) {
       listView.push(
         <Button
           width='100%'
-          colorScheme='gray'
+          colorScheme={c.id === selectedChannelId ? 'blue' : 'gray'}
           size='xs'
           variant='outline'
           key={c.id}
+          onClick={() => onSelectChannel(c)}
         >
           {c.name}
         </Button>
@@ -64,8 +67,26 @@ function ChatChannel({ user, active }) {
     return listView;
   };
 
-  const onSaveChannel = () => {
-    setIsAddChannel(false);
+  const usersView = (users) => {
+    let listView = [];
+    users.forEach((u) => {
+      if (u.id !== user.uid) {
+        listView.push(
+          <ListItem key={u.id}>
+            <Button
+              width='100%'
+              colorScheme={u.id === selectedUserId ? 'blue' : 'gray'}
+              size='xs'
+              variant='outline'
+              onClick={() => onSelectUser(u)}
+            >
+              {u.name}
+            </Button>
+          </ListItem>
+        );
+      }
+    });
+    return listView;
   };
 
   return (
