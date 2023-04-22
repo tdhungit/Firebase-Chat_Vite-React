@@ -1,18 +1,23 @@
 import { Button, Flex, Input, Spinner } from '@chakra-ui/react';
 import React from 'react';
 
-function ChatBoxFooter({ inputMessage, setInputMessage, handleSendMessage, isSending }) {
+function ChatBoxFooter({
+  inputMessage,
+  setInputMessage,
+  handleSendMessage,
+  isSending,
+}) {
   return (
-    <Flex w="100%" mt="5">
+    <Flex w='100%' mt='5'>
       <Input
-        placeholder="Type Something..."
-        border="none"
-        borderRadius="none"
+        placeholder='Type Something...'
+        border='none'
+        borderRadius='none'
         _focus={{
-          border: "1px solid black",
+          border: '1px solid black',
         }}
         onKeyPress={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === 'Enter') {
             handleSendMessage();
           }
         }}
@@ -20,21 +25,22 @@ function ChatBoxFooter({ inputMessage, setInputMessage, handleSendMessage, isSen
         onChange={(e) => setInputMessage(e.target.value)}
       />
       {isSending && <Spinner />}
-      {!isSending &&
-      <Button
-        bg="black"
-        color="white"
-        borderRadius="none"
-        _hover={{
-          bg: "white",
-          color: "black",
-          border: "1px solid black",
-        }}
-        disabled={inputMessage.trim().length <= 0}
-        onClick={handleSendMessage}
-      >
-        Send
-      </Button>}
+      {!isSending && (
+        <Button
+          bg='black'
+          color='white'
+          borderRadius={5}
+          _hover={{
+            bg: 'white',
+            color: 'black',
+            border: '1px solid black',
+          }}
+          disabled={inputMessage.trim().length <= 0}
+          onClick={handleSendMessage}
+        >
+          Send
+        </Button>
+      )}
     </Flex>
   );
 }

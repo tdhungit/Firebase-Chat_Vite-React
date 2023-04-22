@@ -20,7 +20,8 @@ function ChatBoxMessage({ user, messages }) {
                 minW='100px'
                 maxW='350px'
                 my='1'
-                p='3'
+                p='2'
+                borderRadius={10}
               >
                 <Text>{item.message}</Text>
               </Flex>
@@ -36,7 +37,8 @@ function ChatBoxMessage({ user, messages }) {
                 minW='100px'
                 maxW='350px'
                 my='1'
-                p='3'
+                p='2'
+                borderRadius={10}
               >
                 <Text>{item.message}</Text>
               </Flex>
