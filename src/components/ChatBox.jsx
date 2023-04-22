@@ -1,4 +1,12 @@
-import { Divider, Flex, Grid, GridItem } from '@chakra-ui/react';
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  Divider,
+  Flex,
+  Grid,
+  GridItem,
+} from '@chakra-ui/react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { db } from '../config/database';
@@ -91,16 +99,21 @@ function ChatBox({ user }) {
             />
           </GridItem>
           <GridItem colSpan={3}>
-            <ChatBoxMessage user={user} messages={messages} />
+            <Card marginTop={3} h='75vh'>
+              <CardBody>
+                <ChatBoxMessage user={user} messages={messages} />
+              </CardBody>
+              <CardFooter>
+                <ChatBoxFooter
+                  inputMessage={inputMessage}
+                  setInputMessage={setInputMessage}
+                  handleSendMessage={handleSendMessage}
+                  isSending={isSending}
+                />
+              </CardFooter>
+            </Card>
           </GridItem>
         </Grid>
-        <Divider />
-        <ChatBoxFooter
-          inputMessage={inputMessage}
-          setInputMessage={setInputMessage}
-          handleSendMessage={handleSendMessage}
-          isSending={isSending}
-        />
       </Flex>
     </Flex>
   );
