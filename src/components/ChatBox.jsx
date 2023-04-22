@@ -29,7 +29,7 @@ function ChatBox({ user }) {
     }
 
     if (activeUser) {
-      return `${user.uid}_${activeUser}`;
+      return [`${user.uid}_${activeUser}`, `${activeUser}_${user.uid}`];
     }
 
     return '';
@@ -38,16 +38,24 @@ function ChatBox({ user }) {
   useEffect(() => {
     const channelId = getChannelId();
     if (channelId) {
-      const unsubscribe = getChatMessages(channelId, (messages) => {
-        setMessages(messages);
-      });
+      let operator = '==';
+      if (activeUser) {
+        operator = 'in';
+      }
+      const unsubscribe = getChatMessages(
+        channelId,
+        (messages) => {
+          setMessages(messages);
+        },
+        operator
+      );
 
       return () => unsubscribe;
     }
   }, [activeChannel, activeUser]);
 
   const handleSendMessage = () => {
-    const channelId = getChannelId();
+    const channelId = `${user.uid}_${activeUser}`;
     if (!channelId) {
       return;
     }

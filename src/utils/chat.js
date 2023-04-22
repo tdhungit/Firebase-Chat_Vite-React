@@ -28,10 +28,11 @@ export function getChatChannels(cb) {
   });
 }
 
-export function getChatMessages(channelId, cb) {
+export function getChatMessages(channelId, cb, operator) {
+  operator = operator || '==';
   const q = query(
     collection(db, DbCollections.chat),
-    where('channelId', '==', channelId),
+    where('channelId', operator, channelId),
     orderBy('createdAt'),
     limit(100)
   );
