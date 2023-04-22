@@ -58,6 +58,10 @@ function ChatChannel({ user, active }) {
     return listView;
   };
 
+  const onSaveChannel = () => {
+    setIsAddChannel(false);
+  };
+
   return (
     <>
       <Card marginTop={3}>
@@ -89,7 +93,7 @@ function ChatChannel({ user, active }) {
         </CardBody>
       </Card>
 
-      <ChatChannelModalForm open={isAddChannel} />
+      <ChatChannelModalForm open={isAddChannel} onFinish={onSaveChannel} />
     </>
   );
 }
