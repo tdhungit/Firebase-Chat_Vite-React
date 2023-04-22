@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  doc,
   limit,
   onSnapshot,
   orderBy,
@@ -25,12 +26,34 @@ export function getChatChannels(cb) {
   });
 }
 
-export function addChatChannel({ name, user }) {
-  return addDoc(collection(db, DbCollections.channel), {
-    createdAt: serverTimestamp(),
-    name,
-    ownerId: user.uid,
-  });
+export async function addPrivateChannel({ user, member }) {
+  const id = `${user.uid}_${member.id}`;
+  const channel = doc(db, DbCollections.channel, id);
+  try {
+    return await setDoc(channel, {
+      createdAt: serverTimestamp(),
+      name: member.name,
+      type: 'private',
+      ownerId: user.uid,
+    });
+  } catch (err) {
+    console.error(err.message);
+    return undefined;
+  }
+}
+
+export async function addChatChannel({ name, user }) {
+  try {
+    return await addDoc(collection(db, DbCollections.channel), {
+      createdAt: serverTimestamp(),
+      name,
+      type: 'group',
+      ownerId: user.uid,
+    });
+  } catch (err) {
+    console.error(err.message);
+    return undefined;
+  }
 }
 
 export function addChat({ channelId, user, message }) {}

@@ -6,13 +6,13 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  setDoc
+  setDoc,
 } from 'firebase/firestore';
 import { DbCollections, db, getDocument } from '../config/database';
 
 export function getUsers(cb) {
   const q = query(
-    collection(db, DbCollections.channel),
+    collection(db, DbCollections.user),
     orderBy('createdAt'),
     limit(50)
   );
@@ -26,9 +26,13 @@ export function getUsers(cb) {
   });
 }
 
+export function getUser(id) {
+  return getDocument(DbCollections.user, id);
+}
+
 export async function addUser({ user }) {
   const { uid, displayName, email, photoURL } = user;
-  const foundUser = await getDocument(DbCollections.user, uid);
+  const foundUser = await getUser(uid);
   if (!foundUser) {
     try {
       return await setDoc(doc(db, DbCollections.user, uid), {
