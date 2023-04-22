@@ -21,11 +21,13 @@ import {
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { addChatChannel } from '../utils/chat';
 import { getUsers } from '../utils/user';
 
 function ChatChannelModalForm({ open, onFinish, user }) {
   const [users, setUsers] = useState([]);
   const [members, setMembers] = useState([]);
+  const [isSave, setIsSave] = useState(false);
 
   useEffect(() => {
     getUsers((users) => {
@@ -33,7 +35,10 @@ function ChatChannelModalForm({ open, onFinish, user }) {
     }, user);
   }, []);
 
-  const onSave = (values, actions) => {
+  const onSave = async (values, actions) => {
+    setIsSave(true);
+    await addChatChannel({ user, name: values.name, members });
+    setIsSave(false);
     onFinish();
   };
 
@@ -53,7 +58,7 @@ function ChatChannelModalForm({ open, onFinish, user }) {
     let usersView = [];
     data.map((u) => {
       usersView.push(
-        <MenuItem onClick={() => onMemberSelect(u)}>
+        <MenuItem onClick={() => onMemberSelect(u)} key={u.id}>
           <Image
             boxSize='2rem'
             borderRadius='full'
@@ -72,7 +77,7 @@ function ChatChannelModalForm({ open, onFinish, user }) {
     let view = [];
     data.map((m) => {
       view.push(
-        <Tag marginRight={2}>
+        <Tag marginRight={2} key={m.id}>
           <Avatar size='sm' src={m.avatar} ml={-1} mr={2} name={m.name} />
           <span>{m.name}</span>
           <TagCloseButton onClick={() => onMemberDel(m.id)} />
@@ -91,7 +96,7 @@ function ChatChannelModalForm({ open, onFinish, user }) {
           <Formik initialValues={{ name: '' }} onSubmit={onSave}>
             {(props) => (
               <Form>
-                <Field name='name'>
+                <Field name='name' key='name'>
                   {({ field, form }) => (
                     <FormControl>
                       <FormLabel>Channel Name</FormLabel>
@@ -115,7 +120,7 @@ function ChatChannelModalForm({ open, onFinish, user }) {
                   mt={4}
                   float='right'
                   colorScheme='blue'
-                  isLoading={props.isSubmitting}
+                  isLoading={isSave}
                   type='submit'
                 >
                   Save

@@ -50,7 +50,13 @@ function ChatChannel({ user, active }) {
     let listView = [];
     channels.forEach((c) => {
       listView.push(
-        <Button width='100%' colorScheme='gray' size='xs' variant='outline'>
+        <Button
+          width='100%'
+          colorScheme='gray'
+          size='xs'
+          variant='outline'
+          key={c.id}
+        >
           {c.name}
         </Button>
       );
@@ -93,7 +99,11 @@ function ChatChannel({ user, active }) {
         </CardBody>
       </Card>
 
-      <ChatChannelModalForm open={isAddChannel} onFinish={onSaveChannel} />
+      <ChatChannelModalForm
+        open={isAddChannel}
+        onFinish={onSaveChannel}
+        user={user}
+      />
     </>
   );
 }
