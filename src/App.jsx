@@ -4,13 +4,17 @@ import './App.css';
 import ChatBox from './components/ChatBox';
 import Welcome from './components/Welcome';
 import { auth } from './config/database';
+import { addUser } from './utils/user';
 
 function App() {
-  const [user] = useAuthState(auth);
+  const [ user ] = useAuthState(auth);
 
   useEffect(() => {
-    
-  }, []);
+    if (user) {
+      addUser({ user })
+        .then(res => console.log(res));
+    }
+  }, [ user ]);
 
   return (
     <div className="App">

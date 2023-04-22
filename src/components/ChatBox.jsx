@@ -1,10 +1,11 @@
-import { Divider, Flex } from '@chakra-ui/react';
+import { Divider, Flex, Grid, GridItem } from '@chakra-ui/react';
 import { addDoc, collection, limit, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { db } from '../config/database';
 import ChatBoxFooter from './ChatBoxFooter';
 import ChatBoxHeader from './ChatBoxHeader';
 import ChatBoxMessage from './ChatBoxMessage';
+import ChatChannel from './ChatChannel';
 
 function ChatBox({ user }) {
   const [messages, setMessages] = useState([]);
@@ -53,13 +54,26 @@ function ChatBox({ user }) {
 
   return (
     <Flex w="100%" h="100vh" justify="center" align="center">
-      <Flex w={["100%", "100%", "40%"]} h="90%" flexDir="column">
+      <Flex w={["100%", "100%", "50%"]} h="90%" flexDir="column">
         <ChatBoxHeader user={user} />
         <Divider w="100%" borderBottomWidth="3px" color="black" mt="5" />
-        <ChatBoxMessage
-          user={user}
-          messages={messages}
-        />
+        <Grid 
+          templateColumns="repeat(4, 1fr)"
+          gap={2}
+        >
+          <GridItem>
+            <ChatChannel
+              user={user} 
+              active={1}
+            />
+          </GridItem>
+          <GridItem colSpan={3}>
+            <ChatBoxMessage
+              user={user}
+              messages={messages}
+            />
+          </GridItem>
+        </Grid>
         <Divider />
         <ChatBoxFooter
           inputMessage={inputMessage}

@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
 import { getDatabase } from 'firebase/database';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
 const config = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -21,3 +21,15 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 export const realtimeDB = getDatabase(app);
+
+export const DbCollections = {
+  channel: 'chakra-channel',
+  chat: 'chakra-chat',
+  user: 'chakra-user',
+};
+
+export async function getDocument(collection, id) {
+  const docRef = doc(db, collection, id);
+  const document = await getDoc(docRef);
+  return document.data();
+}
