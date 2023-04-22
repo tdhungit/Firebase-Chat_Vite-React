@@ -1,13 +1,24 @@
-import { PlusSquareIcon } from '@chakra-ui/icons';
+import {
+  DeleteIcon,
+  EditIcon,
+  PlusSquareIcon,
+  SettingsIcon,
+} from '@chakra-ui/icons';
 import {
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
   Heading,
+  IconButton,
   List,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { getChatChannels } from '../utils/chat';
@@ -48,20 +59,43 @@ function ChatChannel({
     setUser(userSelect);
   };
 
+  const onEditChannel = (channel) => {
+    setIsAddChannel(true);
+  };
+
+  const onDeleteChannel = (channel) => {};
+
   const channelsView = (channels) => {
     let listView = [];
     channels.forEach((c) => {
       listView.push(
-        <Button
-          width='100%'
-          colorScheme={c.id === selectedChannelId ? 'blue' : 'gray'}
-          size='xs'
-          variant='outline'
-          key={c.id}
-          onClick={() => onSelectChannel(c)}
-        >
-          {c.name}
-        </Button>
+        <ListItem key={c.id} textAlign='center'>
+          <ButtonGroup
+            size='xs'
+            isAttached
+            colorScheme={c.id === selectedChannelId ? 'blue' : 'gray'}
+            width='100%'
+          >
+            <Button width='100%' onClick={() => onSelectChannel(c)}>
+              {c.name}
+            </Button>
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                icon={<SettingsIcon />}
+                aria-label='Settings'
+              />
+              <MenuList>
+                <MenuItem key='edit' onClick={() => onEditChannel(c)}>
+                  <EditIcon /> &nbsp;<span>Edit</span>
+                </MenuItem>
+                <MenuItem key='delete' onClick={() => onDeleteChannel(c)}>
+                  <DeleteIcon /> &nbsp;<span>Delete</span>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </ButtonGroup>
+        </ListItem>
       );
     });
     return listView;
@@ -77,7 +111,6 @@ function ChatChannel({
               width='100%'
               colorScheme={u.id === selectedUserId ? 'blue' : 'gray'}
               size='xs'
-              variant='outline'
               onClick={() => onSelectUser(u)}
             >
               {u.name}
@@ -124,6 +157,7 @@ function ChatChannel({
         open={isAddChannel}
         onFinish={onSaveChannel}
         user={user}
+        onOpenChange={setIsAddChannel}
       />
     </>
   );

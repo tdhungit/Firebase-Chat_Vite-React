@@ -13,6 +13,7 @@ import {
   MenuList,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
@@ -24,7 +25,7 @@ import React, { useEffect, useState } from 'react';
 import { addChatChannel } from '../utils/chat';
 import { getUsers } from '../utils/user';
 
-function ChatChannelModalForm({ open, onFinish, user }) {
+function ChatChannelModalForm({ open, onFinish, user, onOpenChange }) {
   const [users, setUsers] = useState([]);
   const [members, setMembers] = useState([]);
   const [isSave, setIsSave] = useState(false);
@@ -92,6 +93,7 @@ function ChatChannelModalForm({ open, onFinish, user }) {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Add Channel</ModalHeader>
+        <ModalCloseButton onClick={() => onOpenChange(false)} />
         <ModalBody>
           <Formik initialValues={{ name: '' }} onSubmit={onSave}>
             {(props) => (
