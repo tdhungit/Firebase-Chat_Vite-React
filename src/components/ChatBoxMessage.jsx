@@ -15,8 +15,8 @@ function ChatBoxMessage({ user, messages }) {
           return (
             <Flex key={index} w='100%' justify='flex-end'>
               <Flex
-                bg='black'
-                color='white'
+                bg='blue.100'
+                color='black'
                 minW='100px'
                 maxW='350px'
                 my='1'
