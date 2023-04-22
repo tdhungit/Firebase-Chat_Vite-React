@@ -7,12 +7,14 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  where,
 } from 'firebase/firestore';
 import { DbCollections, db } from '../config/database';
 
 export function getChatChannels(cb) {
   const q = query(
     collection(db, DbCollections.channel),
+    where('type', '==', 'group'),
     orderBy('createdAt'),
     limit(50)
   );
