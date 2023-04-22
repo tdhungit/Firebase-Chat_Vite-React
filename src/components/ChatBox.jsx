@@ -1,15 +1,8 @@
 import { Divider, Flex, Grid, GridItem } from '@chakra-ui/react';
-import {
-  addDoc,
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { db } from '../config/database';
+import { getChatMessages } from '../utils/chat';
 import ChatBoxFooter from './ChatBoxFooter';
 import ChatBoxHeader from './ChatBoxHeader';
 import ChatBoxMessage from './ChatBoxMessage';
@@ -22,25 +15,35 @@ function ChatBox({ user }) {
   const [activeChannel, setActiveChannel] = useState('');
   const [activeUser, setActiveUser] = useState('');
 
+  const getChannelId = () => {
+    if (activeChannel) {
+      return activeChannel;
+    }
+
+    if (activeUser) {
+      return `${user.uid}_${activeUser}`;
+    }
+
+    return '';
+  };
+
   useEffect(() => {
-    const q = query(
-      collection(db, 'chakra-chat'),
-      orderBy('createdAt'),
-      limit(50)
-    );
-
-    const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
-      let messages = [];
-      QuerySnapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+    const channelId = getChannelId();
+    if (channelId) {
+      const unsubscribe = getChatMessages(channelId, (messages) => {
+        setMessages(messages);
       });
-      setMessages(messages);
-    });
 
-    return () => unsubscribe;
-  }, []);
+      return () => unsubscribe;
+    }
+  }, [activeChannel, activeUser]);
 
   const handleSendMessage = () => {
+    const channelId = getChannelId();
+    if (!channelId) {
+      return;
+    }
+
     const { uid, displayName, email, photoURL } = user;
     setIsSending(true);
     addDoc(collection(db, 'chakra-chat'), {
@@ -50,9 +53,9 @@ function ChatBox({ user }) {
       createdAt: serverTimestamp(),
       uid,
       email,
+      channelId: channelId,
     })
       .then((res) => {
-        console.log(res);
         setInputMessage('');
         setIsSending(false);
       })

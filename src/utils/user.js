@@ -17,7 +17,7 @@ export function getUsers(cb, currentUser = null) {
     limit(50)
   );
 
-  onSnapshot(q, (QuerySnapshot) => {
+  return onSnapshot(q, (QuerySnapshot) => {
     let users = [];
     QuerySnapshot.forEach((doc) => {
       if (currentUser && currentUser.uid) {

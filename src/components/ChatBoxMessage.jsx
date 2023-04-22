@@ -9,18 +9,18 @@ function ChatBoxMessage({ user, messages }) {
   };
 
   return (
-    <Flex w="100%" h="80%" overflowY="scroll" flexDirection="column" p="3">
+    <Flex w='100%' h='80%' overflowY='scroll' flexDirection='column' p='3'>
       {messages.map((item, index) => {
         if (item.email === user.email) {
           return (
-            <Flex key={index} w="100%" justify="flex-end">
+            <Flex key={index} w='100%' justify='flex-end'>
               <Flex
-                bg="black"
-                color="white"
-                minW="100px"
-                maxW="350px"
-                my="1"
-                p="3"
+                bg='black'
+                color='white'
+                minW='100px'
+                maxW='350px'
+                my='1'
+                p='3'
               >
                 <Text>{item.message}</Text>
               </Flex>
@@ -28,19 +28,15 @@ function ChatBoxMessage({ user, messages }) {
           );
         } else {
           return (
-            <Flex key={index} w="100%">
-              <Avatar
-                name="Computer"
-                src={item.avatar}
-                bg="blue.300"
-              ></Avatar>
+            <Flex key={index} w='100%'>
+              <Avatar name='Computer' src={item.avatar} bg='blue.300'></Avatar>
               <Flex
-                bg="gray.100"
-                color="black"
-                minW="100px"
-                maxW="350px"
-                my="1"
-                p="3"
+                bg='gray.100'
+                color='black'
+                minW='100px'
+                maxW='350px'
+                my='1'
+                p='3'
               >
                 <Text>{item.message}</Text>
               </Flex>

@@ -15,16 +15,33 @@ export function getChatChannels(cb) {
   const q = query(
     collection(db, DbCollections.channel),
     where('type', '==', 'group'),
-    orderBy('createdAt'),
+    orderBy('createdAt', 'desc'),
     limit(50)
   );
 
-  onSnapshot(q, (QuerySnapshot) => {
+  return onSnapshot(q, (QuerySnapshot) => {
     let channels = [];
     QuerySnapshot.forEach((doc) => {
       channels.push({ ...doc.data(), id: doc.id });
     });
     cb(channels);
+  });
+}
+
+export function getChatMessages(channelId, cb) {
+  const q = query(
+    collection(db, DbCollections.chat),
+    where('channelId', '==', channelId),
+    orderBy('createdAt'),
+    limit(100)
+  );
+
+  return onSnapshot(q, (QuerySnapshot) => {
+    let messages = [];
+    QuerySnapshot.forEach((doc) => {
+      messages.push({ ...doc.data(), id: doc.id });
+    });
+    cb(messages);
   });
 }
 
