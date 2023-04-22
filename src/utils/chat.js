@@ -35,6 +35,10 @@ export async function addPrivateChannel({ user, member }) {
       name: member.name,
       type: 'private',
       ownerId: user.uid,
+      members: {
+        [user.uid]: true,
+        [member.id]: true,
+      },
     });
   } catch (err) {
     console.error(err.message);
@@ -42,13 +46,15 @@ export async function addPrivateChannel({ user, member }) {
   }
 }
 
-export async function addChatChannel({ name, user }) {
+export async function addChatChannel({ user, name, members }) {
   try {
+    members[user.uid] = true;
     return await addDoc(collection(db, DbCollections.channel), {
       createdAt: serverTimestamp(),
       name,
       type: 'group',
       ownerId: user.uid,
+      members,
     });
   } catch (err) {
     console.error(err.message);

@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 import { DbCollections, db, getDocument } from '../config/database';
 
-export function getUsers(cb) {
+export function getUsers(cb, currentUser = null) {
   const q = query(
     collection(db, DbCollections.user),
     orderBy('createdAt'),
@@ -20,7 +20,13 @@ export function getUsers(cb) {
   onSnapshot(q, (QuerySnapshot) => {
     let users = [];
     QuerySnapshot.forEach((doc) => {
-      users.push({ ...doc.data(), id: doc.id });
+      if (currentUser && currentUser.uid) {
+        if (currentUser.uid !== doc.id) {
+          users.push({ ...doc.data(), id: doc.id });
+        }
+      } else {
+        users.push({ ...doc.data(), id: doc.id });
+      }
     });
     cb(users);
   });
