@@ -104,10 +104,18 @@ export async function addChatChannel({ user, name, members }) {
 }
 
 export async function updateChatChannel(channelId, { name, members, user }) {
+  const { uid, displayName, email, photoURL } = user;
   const channel = await getChannel(channelId);
-  let membersInfo = channel.membersInfo || {};
-  let allMemberIds = channel.allMemberIds || {};
-  let memberIds = { [user.uid]: true };
+  let membersInfo = channel.membersInfo || {
+    [uid]: {
+      id: uid,
+      name: displayName,
+      avatar: photoURL,
+      email,
+    },
+  };
+  let allMemberIds = channel.allMemberIds || { [uid]: true };
+  let memberIds = [uid];
   members.forEach((m) => {
     allMemberIds[m.id] = true;
     membersInfo[m.id] = m;
@@ -115,7 +123,13 @@ export async function updateChatChannel(channelId, { name, members, user }) {
   });
 
   const ref = doc(db, DbCollections.channel, channelId);
-  const result = await updateDoc(ref, { name, members, memberIds, allMembers });
+  const result = await updateDoc(ref, {
+    name,
+    members,
+    memberIds,
+    membersInfo,
+    allMemberIds,
+  });
   return { id: channelId, ...result };
 }
 
@@ -124,6 +138,7 @@ export async function leftChannel(channelId, user) {
   const members = channel.members.filter((m) => m.id !== user.uid);
   const memberIds = channel.memberIds.filter((id) => id !== user.uid);
   const allMemberIds = { ...channel.allMemberIds, [user.uid]: false };
+  const ref = doc(db, DbCollections.channel, channelId);
   const result = await updateDoc(ref, { members, memberIds, allMemberIds });
   return { id: channelId, ...result };
 }
