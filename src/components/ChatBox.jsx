@@ -110,6 +110,7 @@ function ChatBox({ user }) {
                   setInputMessage={setInputMessage}
                   handleSendMessage={handleSendMessage}
                   isSending={isSending}
+                  active={activeChannel ? true : activeUser ? true : false}
                 />
               </CardFooter>
             </Card>

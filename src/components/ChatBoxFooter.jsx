@@ -6,6 +6,7 @@ function ChatBoxFooter({
   setInputMessage,
   handleSendMessage,
   isSending,
+  active,
 }) {
   return (
     <Flex w='100%' mt='5'>
@@ -23,9 +24,9 @@ function ChatBoxFooter({
         }}
         value={inputMessage}
         onChange={(e) => setInputMessage(e.target.value)}
+        disabled={!active}
       />
-      {isSending && <Spinner />}
-      {!isSending && (
+      {!isSending && inputMessage.trim().length > 0 && active && (
         <Button
           bg='black'
           color='white'
@@ -35,10 +36,14 @@ function ChatBoxFooter({
             color: 'black',
             border: '1px solid black',
           }}
-          disabled={inputMessage.trim().length <= 0}
           onClick={handleSendMessage}
         >
           Send
+        </Button>
+      )}
+      {(isSending || inputMessage.trim().length <= 0 || !active) && (
+        <Button bg='gray' color='white' borderRadius={5}>
+          Send {isSending && <Spinner />}
         </Button>
       )}
     </Flex>
