@@ -121,11 +121,14 @@ function ChatChannel({
                 aria-label='Settings'
               />
               <MenuList>
-                <MenuItem key='edit' onClick={() => onEditChannel(c)}>
-                  <EditIcon /> &nbsp;<span>Edit</span>
-                </MenuItem>
+                {user.uid === c.ownerId && (
+                  <MenuItem key='edit' onClick={() => onEditChannel(c)}>
+                    <EditIcon /> &nbsp;<span>Edit</span>
+                  </MenuItem>
+                )}
                 <MenuItem key='delete' onClick={() => onDeleteChannel(c)}>
-                  <DeleteIcon /> &nbsp;<span>Delete</span>
+                  <DeleteIcon /> &nbsp;
+                  <span>{user.uid === c.ownerId ? 'Delete' : 'Left'}</span>
                 </MenuItem>
               </MenuList>
             </Menu>
