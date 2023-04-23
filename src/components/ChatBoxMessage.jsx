@@ -25,12 +25,23 @@ function ChatBoxMessage({ user, messages }) {
               >
                 <Text>{item.message}</Text>
               </Flex>
+              <Avatar
+                marginLeft={2}
+                name={user.displayName}
+                src={user.photoURL}
+                bg='blue.300'
+              />
             </Flex>
           );
         } else {
           return (
             <Flex key={index} w='100%'>
-              <Avatar name='Computer' src={item.avatar} bg='blue.300'></Avatar>
+              <Avatar
+                name={item.name}
+                src={item.avatar}
+                bg='blue.300'
+                marginRight={2}
+              />
               <Flex
                 bg='gray.100'
                 color='black'

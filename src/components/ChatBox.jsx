@@ -53,14 +53,19 @@ function ChatBox({ user }) {
   }, [activeChannel, activeUser]);
 
   const handleSendMessage = async () => {
-    const channelId = `${user.uid}_${activeUser}`;
-    if (!channelId) {
+    let channelId;
+    if (activeChannel) {
+      channelId = activeChannel;
+    } else if (activeUser) {
+      channelId = `${user.uid}_${activeUser}`;
+    } else {
+      console.log('Need to select channel');
       return;
     }
 
     setIsSending(true);
     try {
-      await addChat({ channelId, user, inputMessage });
+      await addChat({ channelId, user, message: inputMessage });
       setInputMessage('');
       setIsSending(false);
     } catch (err) {
