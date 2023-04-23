@@ -21,9 +21,10 @@ import {
   MenuList,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { getChatChannels } from '../utils/chat';
+import { deleteChatChannel, getChatChannels, leftChannel } from '../utils/chat';
 import { getUsers } from '../utils/user';
 import ChatChannelModalForm from './ChatChannelModalForm';
+import ConfirmDialog from './ConfirmDialog';
 
 function ChatChannel({
   user,
@@ -36,6 +37,9 @@ function ChatChannel({
   const [channels, setChannels] = useState([]);
   const [isAddChannel, setIsAddChannel] = useState(false);
   const [activeChannel, setActiveChannel] = useState(null);
+  const [confirmDeleteChannel, setConfirmDeleteChannel] = useState(false);
+  const [messageConfirmDeleteChannel, setMessageConfirmDeleteChannel] =
+    useState('');
 
   useEffect(() => {
     // get channels
@@ -67,7 +71,34 @@ function ChatChannel({
     setActiveChannel(channel);
   };
 
-  const onDeleteChannel = (channel) => {};
+  const onDeleteChannel = async (channel) => {
+    setActiveChannel(channel);
+    setConfirmDeleteChannel(true);
+    if (user.uid === channel.ownerId) {
+      setMessageConfirmDeleteChannel('Are you want to delete this channel?');
+    } else {
+      setMessageConfirmDeleteChannel('Are you want to left this channel?');
+    }
+  };
+
+  const processDeleteChannel = async () => {
+    const channel = activeChannel;
+    if (user.uid === channel.ownerId) {
+      try {
+        await deleteChatChannel(channel.id);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await leftChannel(channel.id, user);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    setActiveChannel(null);
+    setConfirmDeleteChannel(false);
+  };
 
   const channelsView = (channels) => {
     let listView = [];
@@ -167,6 +198,16 @@ function ChatChannel({
         user={user}
         onOpenChange={setIsAddChannel}
         activeChannel={activeChannel}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteChannel}
+        onConfirm={() => processDeleteChannel()}
+        title='Please Confirm'
+        message={messageConfirmDeleteChannel}
+        cancelLabel='Cancel'
+        confirmLabel='Confirm'
+        onOpenChange={setConfirmDeleteChannel}
       />
     </>
   );

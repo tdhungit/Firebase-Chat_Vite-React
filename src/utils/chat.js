@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   limit,
   onSnapshot,
@@ -72,28 +73,63 @@ export async function addPrivateChannel({ user, member }) {
 }
 
 export async function addChatChannel({ user, name, members }) {
-  try {
-    members[user.uid] = true;
-    return await addDoc(collection(db, DbCollections.channel), {
-      createdAt: serverTimestamp(),
-      name,
-      type: 'group',
-      ownerId: user.uid,
-      members,
-    });
-  } catch (err) {
-    console.error(err.message);
-    return undefined;
-  }
+  const { uid, displayName, email, photoURL } = user;
+  let membersInfo = {
+    [uid]: {
+      id: uid,
+      name: displayName,
+      avatar: photoURL,
+      email,
+    },
+  };
+  let allMemberIds = { [uid]: true };
+  let memberIds = [uid];
+  members.forEach((m) => {
+    allMemberIds[m.id] = true;
+    membersInfo[m.id] = m;
+    memberIds.push(m.id);
+  });
+
+  return await addDoc(collection(db, DbCollections.channel), {
+    createdAt: serverTimestamp(),
+    name,
+    type: 'group',
+    ownerId: user.uid,
+    membersInfo,
+    allMemberIds,
+    memberIds,
+    members,
+  });
 }
 
 export async function updateChatChannel(channelId, { name, members, user }) {
+  const channel = await getChannel(channelId);
+  let membersInfo = channel.membersInfo || {};
+  let allMemberIds = channel.allMemberIds || {};
+  let memberIds = { [user.uid]: true };
+  members.forEach((m) => {
+    allMemberIds[m.id] = true;
+    membersInfo[m.id] = m;
+    memberIds.push(m.id);
+  });
+
   const ref = doc(db, DbCollections.channel, channelId);
-  if (members) {
-    members[user.uid] = true;
-  }
-  const result = await updateDoc(ref, { name, members });
+  const result = await updateDoc(ref, { name, members, memberIds, allMembers });
   return { id: channelId, ...result };
+}
+
+export async function leftChannel(channelId, user) {
+  const channel = await getChannel(channelId);
+  const members = channel.members.filter((m) => m.id !== user.uid);
+  const memberIds = channel.memberIds.filter((id) => id !== user.uid);
+  const allMemberIds = { ...channel.allMemberIds, [user.uid]: false };
+  const result = await updateDoc(ref, { members, memberIds, allMemberIds });
+  return { id: channelId, ...result };
+}
+
+export function deleteChatChannel(channelId) {
+  const ref = doc(db, DbCollections.channel, channelId);
+  return deleteDoc(ref);
 }
 
 export function addChat({ channelId, user, message }) {
