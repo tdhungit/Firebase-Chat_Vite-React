@@ -22,10 +22,16 @@ import {
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { addChatChannel } from '../utils/chat';
+import { addChatChannel, getChannel, updateChatChannel } from '../utils/chat';
 import { getUsers } from '../utils/user';
 
-function ChatChannelModalForm({ open, onFinish, user, onOpenChange }) {
+function ChatChannelModalForm({
+  open,
+  onFinish,
+  user,
+  onOpenChange,
+  activeChannel,
+}) {
   const [users, setUsers] = useState([]);
   const [members, setMembers] = useState([]);
   const [isSave, setIsSave] = useState(false);
@@ -36,11 +42,30 @@ function ChatChannelModalForm({ open, onFinish, user, onOpenChange }) {
     }, user);
   }, []);
 
+  useEffect(() => {
+    if (activeChannel && activeChannel.members) {
+      setMembers(activeChannel.members);
+    } else {
+      setMembers([]);
+    }
+  }, [activeChannel]);
+
   const onSave = async (values, actions) => {
     setIsSave(true);
-    await addChatChannel({ user, name: values.name, members });
+    let result;
+    if (activeChannel && activeChannel.id) {
+      result = await updateChatChannel(activeChannel.id, {
+        name: values.name,
+        members,
+        user,
+      });
+    } else {
+      result = await addChatChannel({ user, name: values.name, members });
+    }
+    const channel = await getChannel(result.id);
     setIsSave(false);
-    onFinish();
+    setMembers([]);
+    onFinish(channel);
   };
 
   const onMemberSelect = (userSelected) => {
@@ -95,7 +120,12 @@ function ChatChannelModalForm({ open, onFinish, user, onOpenChange }) {
         <ModalHeader>Add Channel</ModalHeader>
         <ModalCloseButton onClick={() => onOpenChange(false)} />
         <ModalBody>
-          <Formik initialValues={{ name: '' }} onSubmit={onSave}>
+          <Formik
+            initialValues={{
+              name: (activeChannel && activeChannel.name) || '',
+            }}
+            onSubmit={onSave}
+          >
             {(props) => (
               <Form>
                 <Field name='name' key='name'>

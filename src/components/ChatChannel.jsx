@@ -35,6 +35,7 @@ function ChatChannel({
   const [users, setUsers] = useState([]);
   const [channels, setChannels] = useState([]);
   const [isAddChannel, setIsAddChannel] = useState(false);
+  const [activeChannel, setActiveChannel] = useState(null);
 
   useEffect(() => {
     // get channels
@@ -47,8 +48,10 @@ function ChatChannel({
     });
   }, []);
 
-  const onSaveChannel = () => {
+  const onSaveChannel = (channel) => {
     setIsAddChannel(false);
+    setChannel(channel);
+    setActiveChannel(null);
   };
 
   const onSelectChannel = (channelSelect) => {
@@ -61,6 +64,7 @@ function ChatChannel({
 
   const onEditChannel = (channel) => {
     setIsAddChannel(true);
+    setActiveChannel(channel);
   };
 
   const onDeleteChannel = (channel) => {};
@@ -134,10 +138,14 @@ function ChatChannel({
         <CardFooter p={2}>
           <Button
             size='xs'
-            colorScheme='blue'
-            variant='ghost'
+            colorScheme='teal'
+            variant='outline'
+            width='100%'
             leftIcon={<PlusSquareIcon />}
-            onClick={() => setIsAddChannel(true)}
+            onClick={() => {
+              setActiveChannel(null);
+              setIsAddChannel(true);
+            }}
           >
             Add
           </Button>
@@ -158,6 +166,7 @@ function ChatChannel({
         onFinish={onSaveChannel}
         user={user}
         onOpenChange={setIsAddChannel}
+        activeChannel={activeChannel}
       />
     </>
   );

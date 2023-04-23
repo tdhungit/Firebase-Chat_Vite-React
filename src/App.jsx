@@ -1,4 +1,4 @@
- import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import './App.css';
 import ChatBox from './components/ChatBox';
@@ -7,20 +7,17 @@ import { auth } from './config/database';
 import { addUser } from './utils/user';
 
 function App() {
-  const [ user ] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
   useEffect(() => {
     if (user) {
-      addUser({ user })
-        .then(res => console.log(res));
+      addUser({ user }).then((res) => {});
     }
-  }, [ user ]);
+  }, [user]);
 
   return (
-    <div className="App">
-      {user ? <ChatBox user={user} /> : <Welcome />}
-    </div>
+    <div className='App'>{user ? <ChatBox user={user} /> : <Welcome />}</div>
   );
 }
 
-export default App
+export default App;

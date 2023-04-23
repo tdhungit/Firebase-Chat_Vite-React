@@ -31,5 +31,5 @@ export const DbCollections = {
 export async function getDocument(collection, id) {
   const docRef = doc(db, collection, id);
   const document = await getDoc(docRef);
-  return document.data();
+  return { ...document.data(), id };
 }

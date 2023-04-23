@@ -7,9 +7,10 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from 'firebase/firestore';
-import { DbCollections, db } from '../config/database';
+import { DbCollections, db, getDocument } from '../config/database';
 
 export function getChatChannels(cb) {
   const q = query(
@@ -44,6 +45,10 @@ export function getChatMessages(channelId, cb, operator) {
     });
     cb(messages);
   });
+}
+
+export function getChannel(id) {
+  return getDocument(DbCollections.channel, id);
 }
 
 export async function addPrivateChannel({ user, member }) {
@@ -82,4 +87,24 @@ export async function addChatChannel({ user, name, members }) {
   }
 }
 
-export function addChat({ channelId, user, message }) {}
+export async function updateChatChannel(channelId, { name, members, user }) {
+  const ref = doc(db, DbCollections.channel, channelId);
+  if (members) {
+    members[user.uid] = true;
+  }
+  const result = await updateDoc(ref, { name, members });
+  return { id: channelId, ...result };
+}
+
+export function addChat({ channelId, user, message }) {
+  const { uid, displayName, email, photoURL } = user;
+  return addDoc(collection(db, DbCollections.chat), {
+    message: message,
+    name: displayName,
+    avatar: photoURL,
+    createdAt: serverTimestamp(),
+    uid,
+    email,
+    channelId: channelId,
+  });
+}

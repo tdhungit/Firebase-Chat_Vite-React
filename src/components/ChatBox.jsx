@@ -7,10 +7,8 @@ import {
   Grid,
   GridItem,
 } from '@chakra-ui/react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { db } from '../config/database';
-import { getChatMessages } from '../utils/chat';
+import { addChat, getChatMessages } from '../utils/chat';
 import ChatBoxFooter from './ChatBoxFooter';
 import ChatBoxHeader from './ChatBoxHeader';
 import ChatBoxMessage from './ChatBoxMessage';
@@ -54,31 +52,21 @@ function ChatBox({ user }) {
     }
   }, [activeChannel, activeUser]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     const channelId = `${user.uid}_${activeUser}`;
     if (!channelId) {
       return;
     }
 
-    const { uid, displayName, email, photoURL } = user;
     setIsSending(true);
-    addDoc(collection(db, 'chakra-chat'), {
-      message: inputMessage,
-      name: displayName,
-      avatar: photoURL,
-      createdAt: serverTimestamp(),
-      uid,
-      email,
-      channelId: channelId,
-    })
-      .then((res) => {
-        setInputMessage('');
-        setIsSending(false);
-      })
-      .catch((e) => {
-        console.log(e);
-        setIsSending(false);
-      });
+    try {
+      await addChat({ channelId, user, inputMessage });
+      setInputMessage('');
+      setIsSending(false);
+    } catch (err) {
+      console.log(err);
+      setIsSending(false);
+    }
   };
 
   const onSelectedChannel = (selectedChannel) => {
