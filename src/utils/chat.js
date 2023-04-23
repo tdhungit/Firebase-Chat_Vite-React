@@ -13,10 +13,11 @@ import {
 } from 'firebase/firestore';
 import { DbCollections, db, getDocument } from '../config/database';
 
-export function getChatChannels(cb) {
+export function getChatChannels(user, cb) {
   const q = query(
     collection(db, DbCollections.channel),
     where('type', '==', 'group'),
+    where('memberIds', 'array-contains', user.uid),
     orderBy('createdAt', 'desc'),
     limit(50)
   );

@@ -43,7 +43,7 @@ function ChatChannel({
 
   useEffect(() => {
     // get channels
-    getChatChannels((allChannels) => {
+    getChatChannels(user, (allChannels) => {
       setChannels(allChannels);
     });
     // get users
