@@ -1,6 +1,7 @@
 import {
   DeleteIcon,
   EditIcon,
+  InfoIcon,
   PlusSquareIcon,
   SettingsIcon,
 } from '@chakra-ui/icons';
@@ -23,6 +24,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { deleteChatChannel, getChatChannels, leftChannel } from '../utils/chat';
 import { getUsers } from '../utils/user';
+import ChatChannelInfo from './ChatChannelInfo';
 import ChatChannelModalForm from './ChatChannelModalForm';
 import ConfirmDialog from './ConfirmDialog';
 
@@ -40,6 +42,7 @@ function ChatChannel({
   const [confirmDeleteChannel, setConfirmDeleteChannel] = useState(false);
   const [messageConfirmDeleteChannel, setMessageConfirmDeleteChannel] =
     useState('');
+  const [isViewChannel, setIsViewChannel] = useState(false);
 
   useEffect(() => {
     // get channels
@@ -64,6 +67,11 @@ function ChatChannel({
 
   const onSelectUser = (userSelect) => {
     setUser(userSelect);
+  };
+
+  const onViewChannel = (channel) => {
+    setActiveChannel(channel);
+    setIsViewChannel(true);
   };
 
   const onEditChannel = (channel) => {
@@ -121,6 +129,9 @@ function ChatChannel({
                 aria-label='Settings'
               />
               <MenuList>
+                <MenuItem key='view' onClick={() => onViewChannel(c)}>
+                  <InfoIcon /> &nbsp;<span>Info</span>
+                </MenuItem>
                 {user.uid === c.ownerId && (
                   <MenuItem key='edit' onClick={() => onEditChannel(c)}>
                     <EditIcon /> &nbsp;<span>Edit</span>
@@ -201,6 +212,18 @@ function ChatChannel({
         user={user}
         onOpenChange={setIsAddChannel}
         activeChannel={activeChannel}
+      />
+
+      <ChatChannelInfo
+        open={isViewChannel}
+        onOpenChange={(open) => {
+          setIsViewChannel(open);
+          if (!open) {
+            setActiveChannel(null);
+          }
+        }}
+        channel={activeChannel}
+        user={user}
       />
 
       <ConfirmDialog
