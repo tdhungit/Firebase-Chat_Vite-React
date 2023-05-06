@@ -52,7 +52,7 @@ function ChatBox({ user }) {
     }
   }, [activeChannel, activeUser]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (chatMessage) => {
     let channelId;
     if (activeChannel) {
       channelId = activeChannel;
@@ -63,9 +63,14 @@ function ChatBox({ user }) {
       return;
     }
 
+    chatMessage = chatMessage || inputMessage;
+    if (!chatMessage) {
+      return;
+    }
+
     setIsSending(true);
     try {
-      await addChat({ channelId, user, message: inputMessage });
+      await addChat({ channelId, user, message: chatMessage });
       setInputMessage('');
       setIsSending(false);
     } catch (err) {
